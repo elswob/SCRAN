@@ -32,20 +32,20 @@ sepCounts=function(dCounts_orig,sing_cols,spike_text){
 }
 
 #' Plot the raw counts
-plot_raw_counts=function(geneCounts,erccCounts,outDir){
+plot_raw_counts=function(geneCounts,spikeCounts,outDir){
   count_df=as.data.frame(geneCounts)
   if(sum(erccCounts)>0){
-    count_df$erccCounts=erccCounts
-    count_df$epc = (count_df$erccCounts/(count_df$geneCounts+count_df$erccCounts))*100
-    count_df$gpc = 100-count_df$epc
+    count_df$spikeCounts=spikeCounts
+    count_df$spc = (count_df$spikeCounts/(count_df$geneCounts+count_df$spikeCounts))*100
+    count_df$gpc = 100-count_df$spc
   }
   summary(count_df)
   
   #plot
   count_df$sample=rownames(count_df)
   mv="geneCounts"
-  if(sum(erccCounts)>0){
-    mv=c("geneCounts","erccCounts")
+  if(sum(spikeCounts)>0){
+    mv=c("geneCounts","spikeCounts")
   }
   m=melt(count_df,id.vars="sample",measure.vars=mv)
   pdf(paste0(outDir,"read_counts_per_sample.pdf"))
@@ -56,7 +56,7 @@ plot_raw_counts=function(geneCounts,erccCounts,outDir){
   print(g)
   write.table(m,file=paste0(outDir,"raw_counts_per_sample.tsv"),sep="\t",quote=F,row.names=F)
   
-  if(sum(erccCounts)>0){  
+  if(sum(spikeCounts)>0){  
     pdf(paste0(outDir,"read_pcs_per_sample.pdf"))
     m=melt(count_df,id.vars="sample",measure.vars=c("epc","gpc"))
     m=m[m$value>0 & m$value<101,]
@@ -154,6 +154,271 @@ read_dist=function(dCounts,sing_cols,outDir){
   g=g+ xlab("Top 10 expressed genes") + ylab("Percentage of counts")
   g=g+theme(axis.text.x = element_text(angle = 45, hjust = 1))
   pdf(paste0(outDir,"top_10_expressed_gene_distribution.pdf"))
+  print(g)
+  dev.off()
+  print(g)
+}
+
+#' Counts per gene per cell
+cpg=function(dCounts,sing_cols){
+  #plot each cells separately maybe?
+  r=rowSums(dCounts[,sing_cols])
+  r_names=names(sort(r,decreasing = T))
+  #print(r_names)
+  total=sum(colSums(dCounts[,sing_cols]))
+  sep=10
+  counts=c()
+  divs=c()
+  #cells=c()
+  m<<-0
+  for (i in seq(0,length(r_names),by=sep)){
+    #print(i)
+    if(i+sep<=length(r_names)){
+      j=i+sep
+      #add one to stop overlap at boundaries
+      r_sub=r_names[(i+1):j]
+      #divide number of reads per gene (or genes) by total mean number of reads for each sample and convert to %
+      #m=mean(rowSums(dCounts[r_sub,sing_cols]))
+      #m=m+sum(rowSums(dCounts[r_sub,sing_cols]))
+      m=m+colSums(dCounts[r_sub,sing_cols])
+      pcm=(m/colSums(dCounts[,sing_cols])*100)
+      #print(m)
+      counts=c(counts,pcm)
+      divs=c(divs,rep(j,length(sing_cols)))
+      #cells=c(cells,colnames(dCounts[sing_cols]))
+    }
+  }
+  #print(divs)
+  #print(counts)
+  #print(cells)
+  df=as.data.frame(divs)
+  df$counts=counts
+  df$cells=names(counts)
+  df$divs=log10(df$divs)
+  head(df)
+  
+  pdf(paste0(outDir,"cumulative_counts_per_gene_per_cell.pdf"))
+  g=ggplot(df,aes(x=divs,y=counts,color=cells)) + geom_point(size = 1) + xlab("Number of genes (log10)") + ylab("Cumulative percentage of counts")
+  g=g + scale_y_continuous(breaks=seq(0, 100, 10))  + expand_limits(y=0) 
+  g=g + scale_x_continuous(breaks=c(1,2,3,4,5))
+  if (length(sing_cols)>20){
+    g=g+guides(col=guide_legend(ncol=2))
+  }
+  print(g)
+  dev.off()
+}
+
+#' PCA and heatmap
+pca_heatmap=function(geneCounts,top){
+  p.pca=prcomp(t(geneCounts))
+  pdf(paste0(outDir,"PCA.pdf"))
+  g = ggbiplot(p.pca, obs.scale = 0, ellipse = TRUE, varname.size=0.001, labels=colnames(geneCounts))
+  print(g)
+  dev.off()
+  pdf(paste0(outDir,"PCA_scree_plot.pdf"))
+  screeplot(p.pca,type="lines",col=3)
+  dev.off()
+  
+  #top=50
+  load.rot=p.pca$rotation
+  top_pca=names(load.rot[,1][order(abs(load.rot[,1]),decreasing=TRUE)][1:top])
+  top_pca
+  
+  #redo PCA
+  geneCounts=geneCounts[rownames(geneCounts) %in% top_pca,]
+  p.pca=prcomp(t(df_f))
+  pdf(paste0(outDir,"PCA_top_",top,".pdf"))
+  g = ggbiplot(p.pca, obs.scale = 0, ellipse = TRUE, varname.size=0.001, labels=colnames(geneCounts))
+  print(g)
+  dev.off()
+  pdf(paste0(outDir,"PCA_scree_plot_top_",top,".pdf"))
+  screeplot(p.pca,type="lines",col=3)
+  dev.off()
+  
+  #convert to log 
+  geneCounts[geneCounts==0]=0.01
+  g_log10=log10(geneCounts[,sing_cols])
+  
+  #get relevant data
+  dc=g_log10[rownames(g_log10) %in% top_pca,]
+  
+  #cluster and heatmap
+  pdf(paste0(outDir,"Heatmap_PCA_top_",top,"_heatmap.pdf"),onefile=FALSE)
+  if(nrow(dc)<=100){
+    pheatmap(dc, show_rownames = T, fontsize_row=7)
+  }else{
+    pheatmap(dc, show_rownames = F)
+  }
+  dev.off()
+}
+
+#`Number of unique genes expressed per sample
+un_genes=function(geneCounts){
+  geneCounts=geneCounts[,sing_cols]
+  
+  uc=function(rd){
+    #find cases where number of cpms > limit for a gene is 1, i.e. unique for one sample 
+    if(sum(rd>cpmVal)==1){
+      #identify which sample
+      which(rd>cpmVal)
+    }
+  }
+  #run the function above on the data
+  a=apply(geneCounts,1,uc) 
+  #convert freq counts to df
+  b=as.data.frame(table(unlist(a)))
+  #add sample names to df
+  b$Cell=colnames(geneCounts)[c(as.numeric(levels(b$Var1)))]
+  b$Var1=NULL
+  return(b)
+  #mean(b$Freq)
+}
+
+#' Gene counts per sample
+gc_per_samp=function(geneCounts,sing_cols){
+  geneCounts=geneCounts[,sing_cols]
+  
+  #calculate number of genes per sample greater than min CPM
+  cc=colSums(geneCounts)
+  
+  #calculate mean of single-cells
+  m=mean(cc[sing_cols])
+  cat("mean = ",m)
+  
+  #plot
+  ccm=melt(cc)
+  pdf(paste0(outDir,"Expressed_genes_per_sample.pdf"))
+  g=ggplot(ccm, aes(y=value,x=rownames(ccm))) + geom_bar(stat="identity")
+  g=g+theme(axis.text.x = element_text(angle = 90, hjust = 1)) + ylab("Number of genes") + xlab("Samples") 
+  g=g+geom_hline(yintercept=m, colour="red")
+  g=g+scale_y_continuous(breaks=seq(0, 16000, 1000)) 
+  print(g)
+  dev.off()
+}
+
+#' Biotypes
+biotypes=function(geneCounts,species){
+  print(Sys.time())
+  if(toupper(species)=='HUMAN'){
+    ensembl <<- useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
+  }else{
+    ensembl <<- useEnsembl(biomart = "ensembl", dataset="mmusculus_gene_ensembl")
+  }
+  btypes<-getBM(attributes=c('gene_biotype','ensembl_gene_id','external_gene_name','external_gene_source'), filters = "ensembl_gene_id", values=rownames(geneCounts), mart=ensembl)
+  print(Sys.time())
+
+  head(geneCounts)
+  #dk$ens=rownames(dk)
+  dkb=merge(geneCounts,btypes[1:2],by.x=0,by.y="ensembl_gene_id")
+  dkb[0:5,0:5]
+  
+  #relable less common biotypes as 'other' (default 1% across all samples)
+  min_biotype=1
+  a=as.data.frame(table(dkb$gene_biotype))
+  head(a)
+  a$pc=a$Freq/sum(a$Freq)*100
+  dkb=merge(dkb,a,by.x="gene_biotype",by.y="Var1")
+  dkb[dkb$pc<min_biotype,]$gene_biotype="Other"
+  dkb$gene_biotype=capitalize(gsub("_"," ",dkb$gene_biotype))
+  
+  #melt the data and plot
+  dkm=melt(dkb,measure.vars = count_cols,id.vars="gene_biotype")
+  dkm=dkm[dkm$value>cpmVal,]
+  pdf(paste0(outDir,"Gene_counts_and_biotypes_",transform,".pdf"))
+  g=ggplot(dkm, aes(x=variable,fill=gene_biotype)) + geom_bar(position="fill") + scale_y_continuous(labels = percent_format())
+  g = g + xlab("Sample") + ylab("Percentage")+ scale_fill_discrete(name="Biotype")  + theme(axis.text.x = element_text(angle = 45, hjust = 1,size=5))
+  print(g)
+  dev.off()
+  print(g)
+  
+  pdf(paste0(outDir,"Percentage_biotypes_",transform,".pdf"))
+  g=ggplot(dkm, aes(x=variable,fill=gene_biotype)) + geom_bar() 
+  g = g + xlab("Sample") + ylab("Count")+ scale_fill_discrete(name="Biotype")  + theme(axis.text.x = element_text(angle = 45, hjust = 1, size=5))
+  g=g+geom_hline(yintercept=m, colour="red")
+  g=g+scale_y_continuous(breaks=seq(0, 20000, 1000))
+  print(g)
+  dev.off()
+}
+
+#' Spike in plots
+spike_in_check=function(spikeCounts,spikeData,sing_cols){
+  if(file.exists("ercc_data.txt")){
+    print("Already got ERCC data...")
+    e=read.delim("ercc_data.txt")
+  }else{
+    x=getURL("https://tools.lifetechnologies.com/content/sfs/manuals/cms_095046.txt")
+    e=read.delim(text=x)
+    write.table(e,file="ercc_data.txt",sep="\t",quote=F)
+  }
+  m=merge(erccData,e[,c(2,4)],by.x=0,by.y="ERCC.ID")
+  #m$ens=NULL
+  head(m)
+  mm=melt(m,measure.vars=sing_cols,id.vars=c(1,ncol(m)))
+  colnames(mm)[2]="conc"
+  #add value to zeroes to avoid log errors
+  mm[mm==0]=0.01
+  #maybe only include values above 1
+  
+  pdf(paste0(outDir,"ercc_plot_log_log_",transform,".pdf"))
+  g = ggplot(mm,aes(x=conc,y=value, color=variable)) + geom_point(shape=1) + scale_y_log10()
+  g = g + scale_x_log10()
+  g = g + geom_smooth(method=lm, se=F) 
+  if (length(count_cols)>20){
+    g=g+guides(col=guide_legend(ncol=2))
+  }
+  print(g)
+  dev.off()
+  print(g)
+  
+  pdf(paste0(outDir,"ercc_plot_log_y_",transform,".pdf"))
+  g = ggplot(mm,aes(x=conc,y=value, color=variable)) + geom_line()
+  g = g + scale_y_log10()
+  #g = g + geom_smooth(method=lm, se=F, )
+  if (length(count_cols)>20){
+    g=g+guides(col=guide_legend(ncol=2))
+  }
+  print(g)
+  dev.off()
+  print(g)
+}
+
+#' Spike ins and house keeper genes
+spike_hkg=function(species,dCounts,spikeCounts,spikeData){
+  #gapdh
+  gapdh="ENSG00000111640"
+  actb="ENSG00000075624"
+  b2m="ENSG00000166710"
+  if(toupper(species)=='MOUSE'){
+    gapdh="ENSMUSG00000057666"
+    actb="ENSMUSG00000029580"
+    b2m="ENSMUSG00000060802"
+  }
+  gapdhCounts=dCounts[gapdh,sing_cols]
+  actbCounts=dCounts[actb,sing_cols]
+  b2mCounts=dCounts[b2m,sing_cols]
+  
+  #gapdh and actb
+  length(gapdhCounts)
+  
+  if(nrow(spikeData)>0){
+    spikeSums=colMeans(spikeCounts)
+  }
+  
+  #merge
+  m=melt(actbCounts)
+  colnames(m)[1]="ACTB"
+  m$GAPDH=gapdhCounts
+  m$B2M=b2mCounts
+  if(nrow(spikeData)>0){
+    m$Spike=spikeSums
+  }
+  m$samples=rownames(m)
+  mm=melt(m)
+  
+  pdf(paste0(outDir,"hkg_spike_in_plot.pdf"))
+  g=ggplot(mm,aes(x=samples,y=value,color=variable, group=variable))+geom_line()
+  g=g+theme(axis.text.x = element_text(angle = 45, hjust = 1, size=5)) + ylab("Count") + xlab("Samples")
+  g=g+geom_line(stat = "hline", yintercept = "mean", aes(colour = variable), linetype="dashed")
   print(g)
   dev.off()
   print(g)

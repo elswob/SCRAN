@@ -2,14 +2,18 @@
 % Please edit documentation in R/qc.R
 \name{biotypes}
 \alias{biotypes}
-\title{Define the row colours for the heatmap.}
+\title{Assign biotypes to each gene}
 \usage{
-biotypes(m)
+biotypes(geneCounts, species)
+
+biotypes(geneCounts, species)
 }
 \arguments{
 \item{m}{A data frame with gene symbols as row names.}
 }
 \description{
-Define the row colours for the heatmap.
+Assign biotypes to each gene
+
+Biotypes
 }
 
