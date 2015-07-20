@@ -2,18 +2,11 @@
 % Please edit documentation in R/qc.R
 \name{biotypes}
 \alias{biotypes}
-\title{Assign biotypes to each gene}
+\title{Biotypes}
 \usage{
 biotypes(geneCounts, species)
-
-biotypes(geneCounts, species)
-}
-\arguments{
-\item{m}{A data frame with gene symbols as row names.}
 }
 \description{
-Assign biotypes to each gene
-
 Biotypes
 }
 

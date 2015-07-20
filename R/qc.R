@@ -1,7 +1,6 @@
-#' Assign biotypes to each gene
-#'
-#' @param m A data frame with gene symbols as row names.
-biotypes=function(m){
+#' Convert single cell column numbers to names
+sing_col_convert=function(dCounts,sing_cols){
+  return(colnames(dCounts)[sing_cols])
 }
 
 #' Filter the counts by CPM and percentage of samples
@@ -11,12 +10,10 @@ biotypes=function(m){
 #' @param cpmVal The minimum CPM value 
 #' @param pc The percentage of cells to be expressed at the minumum CPM
 #' @return The original and filtered counts
-filter=function(dCounts,sing_cols,cpmVal,samp_pc){
+filter_counts=function(dCounts,sing_cols,cpmVal=1,samp_pc=5){
   keep=rowSums(cpm(dCounts[,sing_cols])>cpmVal) >= (length(sing_cols)/100)*samp_pc
   summary(keep)
-  dCounts=dCounts[keep,]
-  dCounts_orig=dCounts
-  return(list("dCounts" = dCounts, "dCounts_orig" = dCounts_orig))
+  return(dCounts[keep,])
 }
 
 #' Separate counts into genes and spike ins
@@ -34,7 +31,7 @@ sepCounts=function(dCounts_orig,sing_cols,spike_text){
 #' Plot the raw counts
 plot_raw_counts=function(geneCounts,spikeCounts,outDir){
   count_df=as.data.frame(geneCounts)
-  if(sum(erccCounts)>0){
+  if(sum(spikeCounts)>0){
     count_df$spikeCounts=spikeCounts
     count_df$spc = (count_df$spikeCounts/(count_df$geneCounts+count_df$spikeCounts))*100
     count_df$gpc = 100-count_df$spc
@@ -58,7 +55,7 @@ plot_raw_counts=function(geneCounts,spikeCounts,outDir){
   
   if(sum(spikeCounts)>0){  
     pdf(paste0(outDir,"read_pcs_per_sample.pdf"))
-    m=melt(count_df,id.vars="sample",measure.vars=c("epc","gpc"))
+    m=melt(count_df,id.vars="sample",measure.vars=c("spc","gpc"))
     m=m[m$value>0 & m$value<101,]
     g=ggplot(m, aes(x=sample,y=value,fill=variable)) + geom_bar(stat="identity")
     g = g + xlab("Sample") + ylab("Percentage") + theme(axis.text.x = element_text(size=5, angle = 45, hjust = 1))
@@ -78,15 +75,7 @@ fake_bulk=function(dCounts){
 }
 
 #' Read distributions
-read_dist=function(dCounts,sing_cols,outDir){
-  #how many genes identified at various CPM cutoffs
-  l=list(c(0,1),c(1,5),c(5,10),c(10,50),c(50,100),c(100,500),c(500,1000),c(1000,5000),c(5000,10000),c(10000,10000000000))
-  for(i in l){
-    print(i[1])
-    k=rowSums(dCounts[,sing_cols]>=i[1] & dCounts[,sing_cols]<i[2]) >= fNum
-    print(table(k))
-  }
-  
+read_dist=function(dCounts,sing_cols,outDir,dCounts_orig){
   #how many reads mapped to genes ordered by most expressed genes
   r=rowSums(dCounts[,sing_cols])
   r_names=names(sort(r,decreasing = T))
@@ -96,7 +85,7 @@ read_dist=function(dCounts,sing_cols,outDir){
   sep=10
   counts=c()
   divs=c()
-  m<<-0
+  m<-0
   for (i in seq(1,length(r_names),by=sep)){
     if(i+sep<=length(r_names)){
       #remove one to stop overlap
