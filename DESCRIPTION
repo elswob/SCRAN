@@ -1,0 +1,10 @@
+Package: SCRAN
+Type: Package
+Title: Single Cell RNA-Seq Analysis
+Version: 0.1
+Date: 2015-07-20
+Author: Ben Elsworth
+Maintainer: <elswob@gmail.com>
+Description: QC normalisation and analysis of single cell RNA-Seq counts data 
+License: None
+LazyData: TRUE
