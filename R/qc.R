@@ -149,57 +149,61 @@ read_dist=function(dCounts,sing_cols,outDir,dCounts_orig){
 }
 
 #' Counts per gene per cell
-cpg=function(dCounts,sing_cols){
-  #plot each cells separately maybe?
-  r=rowSums(dCounts[,sing_cols])
-  r_names=names(sort(r,decreasing = T))
-  #print(r_names)
-  total=sum(colSums(dCounts[,sing_cols]))
-  sep=10
-  counts=c()
-  divs=c()
-  #cells=c()
-  m<<-0
-  for (i in seq(0,length(r_names),by=sep)){
-    #print(i)
-    if(i+sep<=length(r_names)){
-      j=i+sep
-      #add one to stop overlap at boundaries
-      r_sub=r_names[(i+1):j]
-      #divide number of reads per gene (or genes) by total mean number of reads for each sample and convert to %
-      #m=mean(rowSums(dCounts[r_sub,sing_cols]))
-      #m=m+sum(rowSums(dCounts[r_sub,sing_cols]))
-      m=m+colSums(dCounts[r_sub,sing_cols])
-      pcm=(m/colSums(dCounts[,sing_cols])*100)
-      #print(m)
-      counts=c(counts,pcm)
-      divs=c(divs,rep(j,length(sing_cols)))
-      #cells=c(cells,colnames(dCounts[sing_cols]))
+cpg=function(dCounts,sing_cols,outDir){
+  if(length(sing_cols)<50){
+    #plot each cells separately maybe?
+    r=rowSums(dCounts[,sing_cols])
+    r_names=names(sort(r,decreasing = T))
+    #print(r_names)
+    total=sum(colSums(dCounts[,sing_cols]))
+    sep=10
+    counts=c()
+    divs=c()
+    #cells=c()
+    m<<-0
+    for (i in seq(0,length(r_names),by=sep)){
+      #print(i)
+      if(i+sep<=length(r_names)){
+        j=i+sep
+        #add one to stop overlap at boundaries
+        r_sub=r_names[(i+1):j]
+        #divide number of reads per gene (or genes) by total mean number of reads for each sample and convert to %
+        #m=mean(rowSums(dCounts[r_sub,sing_cols]))
+        #m=m+sum(rowSums(dCounts[r_sub,sing_cols]))
+        m=m+colSums(dCounts[r_sub,sing_cols])
+        pcm=(m/colSums(dCounts[,sing_cols])*100)
+        #print(m)
+        counts=c(counts,pcm)
+        divs=c(divs,rep(j,length(sing_cols)))
+        #cells=c(cells,colnames(dCounts[sing_cols]))
+      }
     }
+    #print(divs)
+    #print(counts)
+    #print(cells)
+    df=as.data.frame(divs)
+    df$counts=counts
+    df$cells=names(counts)
+    df$divs=log10(df$divs)
+    head(df)
+    
+    pdf(paste0(outDir,"cumulative_counts_per_gene_per_cell.pdf"))
+    g=ggplot(df,aes(x=divs,y=counts,color=cells)) + geom_point(size = 1) + xlab("Number of genes (log10)") + ylab("Cumulative percentage of counts")
+    g=g + scale_y_continuous(breaks=seq(0, 100, 10))  + expand_limits(y=0) 
+    g=g + scale_x_continuous(breaks=c(1,2,3,4,5))
+    if (length(sing_cols)>20){
+      g=g+guides(col=guide_legend(ncol=2))
+    }
+    print(g)
+    dev.off()
+  }else{
+    print("Too many samples for plot!")
   }
-  #print(divs)
-  #print(counts)
-  #print(cells)
-  df=as.data.frame(divs)
-  df$counts=counts
-  df$cells=names(counts)
-  df$divs=log10(df$divs)
-  head(df)
-  
-  pdf(paste0(outDir,"cumulative_counts_per_gene_per_cell.pdf"))
-  g=ggplot(df,aes(x=divs,y=counts,color=cells)) + geom_point(size = 1) + xlab("Number of genes (log10)") + ylab("Cumulative percentage of counts")
-  g=g + scale_y_continuous(breaks=seq(0, 100, 10))  + expand_limits(y=0) 
-  g=g + scale_x_continuous(breaks=c(1,2,3,4,5))
-  if (length(sing_cols)>20){
-    g=g+guides(col=guide_legend(ncol=2))
-  }
-  print(g)
-  dev.off()
 }
 
 #' PCA and heatmap
-pca_heatmap=function(geneCounts,top){
-  p.pca=prcomp(t(geneCounts))
+pca_heatmap=function(geneCounts,top,outDir){
+  p.pca=prcomp(t(cpm(geneCounts)))
   pdf(paste0(outDir,"PCA.pdf"))
   g = ggbiplot(p.pca, obs.scale = 0, ellipse = TRUE, varname.size=0.001, labels=colnames(geneCounts))
   print(g)
@@ -215,7 +219,7 @@ pca_heatmap=function(geneCounts,top){
   
   #redo PCA
   geneCounts=geneCounts[rownames(geneCounts) %in% top_pca,]
-  p.pca=prcomp(t(df_f))
+  p.pca=prcomp(t(cpm(geneCounts)))
   pdf(paste0(outDir,"PCA_top_",top,".pdf"))
   g = ggbiplot(p.pca, obs.scale = 0, ellipse = TRUE, varname.size=0.001, labels=colnames(geneCounts))
   print(g)
@@ -242,12 +246,12 @@ pca_heatmap=function(geneCounts,top){
 }
 
 #`Number of unique genes expressed per sample
-un_genes=function(geneCounts){
+uniq_genes=function(geneCounts){
   geneCounts=geneCounts[,sing_cols]
   
   uc=function(rd){
     #find cases where number of cpms > limit for a gene is 1, i.e. unique for one sample 
-    if(sum(rd>cpmVal)==1){
+    if(sum(rd)==1){
       #identify which sample
       which(rd>cpmVal)
     }
@@ -264,14 +268,13 @@ un_genes=function(geneCounts){
 }
 
 #' Gene counts per sample
-gc_per_samp=function(geneCounts,sing_cols){
-  geneCounts=geneCounts[,sing_cols]
+gc_per_samp=function(geneCounts,outDir){
   
   #calculate number of genes per sample greater than min CPM
   cc=colSums(geneCounts)
   
   #calculate mean of single-cells
-  m=mean(cc[sing_cols])
+  m=mean(cc)
   cat("mean = ",m)
   
   #plot
@@ -286,7 +289,7 @@ gc_per_samp=function(geneCounts,sing_cols){
 }
 
 #' Biotypes
-biotypes=function(geneCounts,species){
+biotypes=function(geneCounts,sing_cols,species,outDir){
   print(Sys.time())
   if(toupper(species)=='HUMAN'){
     ensembl <<- useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
@@ -311,7 +314,7 @@ biotypes=function(geneCounts,species){
   dkb$gene_biotype=capitalize(gsub("_"," ",dkb$gene_biotype))
   
   #melt the data and plot
-  dkm=melt(dkb,measure.vars = count_cols,id.vars="gene_biotype")
+  dkm=melt(dkb,measure.vars = sing_cols,id.vars="gene_biotype")
   dkm=dkm[dkm$value>cpmVal,]
   pdf(paste0(outDir,"Gene_counts_and_biotypes_",transform,".pdf"))
   g=ggplot(dkm, aes(x=variable,fill=gene_biotype)) + geom_bar(position="fill") + scale_y_continuous(labels = percent_format())

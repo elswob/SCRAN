@@ -4,10 +4,12 @@ sing_cols=sing_col_convert(d,sing_cols)
 print(dim(d))
 
 #filter
+print("Filter...")
 dFilt=filter_counts(d,sing_cols)
 print(dim(dFilt))
 
 #split
+print("Data split...")
 sep=sepCounts(dFilt,sing_cols, "ERCC")
 print(dim(sep$spikeData))
 print(dim(sep$geneData))
@@ -16,7 +18,27 @@ print(dim(sep$geneData))
 outDir="test/"
 
 #plot raw counts
+print("Raw counts...")
 plot_raw_counts(sep$geneCounts,sep$spikeCounts,outDir)
 
-print("Read dist")
+#Read dist
+print("Read dist...")
 read_dist(sep$geneData,sing_cols,outDir,dFilt)
+
+#counts per gene
+print("Counts per gene...")
+cpg(sep$geneData,sing_cols,outDir)
+
+#pca
+pca_heatmap(sep$geneData,10,outDir)
+
+#unique genes
+u=uniq_genes(sep$geneData)
+print("Unique genes...")
+print(u)
+
+#gene counts
+gc_per_samp(sep$geneData,outDir)
+
+#biotypes
+biotypes(sep$geneData,sing_cols,"Human",outDir)
