@@ -1,10 +1,13 @@
 #' Test function
-run_test=function(){
-  d=read.delim("test/genes.counts.filtered.test.txt",header=T,row.names = 1)
+run_test=function(outDir){
+  #load the test data
+  print("Loading data...")
+  data(test_data)
+  print(dim(d))
+  
+  #set single cell columns and get column names
   sing_cols=c(3:ncol(d))
   sing_cols=sing_col_convert(d,sing_cols)
-  print("Raw...")
-  print(dim(d))
   
   #filter
   print("Filter...")
@@ -18,7 +21,6 @@ run_test=function(){
   print(dim(sep$geneData))
   
   #set out dir
-  outDir="test/raw/"
   dir.create(outDir,showWarnings = F)
   
   #plot raw counts

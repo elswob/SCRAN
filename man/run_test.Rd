@@ -4,7 +4,7 @@
 \alias{run_test}
 \title{Test function}
 \usage{
-run_test()
+run_test(outDir)
 }
 \description{
 Test function

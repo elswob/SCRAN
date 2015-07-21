@@ -4,7 +4,7 @@
 \alias{spike_hkg}
 \title{Spike ins and house keeper genes}
 \usage{
-spike_hkg(species, dCounts, spikeCounts, spikeData)
+spike_hkg(geneData, spikeData, species, sing_cols, outDir)
 }
 \description{
 Spike ins and house keeper genes
