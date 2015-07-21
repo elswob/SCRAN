@@ -8,7 +8,15 @@ library(R.utils)
 library(RCurl)
 library(DESeq)
 library(devtools)
+library( genefilter )
+library( EBImage )
+library( statmod )
+library( topGO )
+library( org.Hs.eg.db )
+library( org.Mm.eg.db )
+library(Rgraphviz)
+options( max.print=300, width=100 )
 
-run_scran=function(counts,sing_cols,cpmVal,pc,spike_text,species){
+run_scran=function(counts,sing_cols,cpmVal=1,pc=5,spike_text="ERCC",species="Human"){
   
 }
