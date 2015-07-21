@@ -4,7 +4,7 @@
 \alias{pca_heatmap}
 \title{PCA and heatmap}
 \usage{
-pca_heatmap(geneCounts, top)
+pca_heatmap(geneCounts, top, outDir)
 }
 \description{
 PCA and heatmap

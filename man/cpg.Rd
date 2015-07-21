@@ -4,7 +4,7 @@
 \alias{cpg}
 \title{Counts per gene per cell}
 \usage{
-cpg(dCounts, sing_cols)
+cpg(dCounts, sing_cols, outDir)
 }
 \description{
 Counts per gene per cell

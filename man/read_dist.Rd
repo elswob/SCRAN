@@ -4,7 +4,7 @@
 \alias{read_dist}
 \title{Read distributions}
 \usage{
-read_dist(dCounts, sing_cols, outDir)
+read_dist(dCounts, sing_cols, outDir, dCounts_orig)
 }
 \description{
 Read distributions

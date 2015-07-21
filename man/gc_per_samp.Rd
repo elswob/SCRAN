@@ -4,7 +4,7 @@
 \alias{gc_per_samp}
 \title{Gene counts per sample}
 \usage{
-gc_per_samp(geneCounts, sing_cols)
+gc_per_samp(geneCounts, outDir)
 }
 \description{
 Gene counts per sample

@@ -4,7 +4,7 @@
 \alias{biotypes}
 \title{Biotypes}
 \usage{
-biotypes(geneCounts, species)
+biotypes(geneCounts, sing_cols, species, outDir)
 }
 \description{
 Biotypes
