@@ -6,18 +6,28 @@ Single Cell Rna-seq ANalysis
 Install libraries
 
 ```
+#CRAN
 install.packages("ggplot2")
 install.packages("pheatmap")
 install.packges("devtools")
 install.packages("R.utils")
 install.packages("RCurl")
+install.packages("statmod")
 
+#GitHub
 install_github("vqv/ggbiplot")
 
+#Bioconductor
 source("http://bioconductor.org/biocLite.R")
 biocLite("edgeR")
 biocLite("biomaRt")
-biocList("DESeq")
+biocLite("DESeq")
+biocLite("genefilter")
+biocLite("EBImage")
+biocLite("topGO")
+biocLite("org.Hs.eg.db")
+biocLite("org.Mm.eg.db")
+biocLite("Rgraphviz")
 ```
 
 ```
@@ -31,12 +41,12 @@ library(R.utils)
 library(RCurl)
 library(DESeq)
 library(devtools)
-library( genefilter )
-library( EBImage )
-library( statmod )
-library( topGO )
-library( org.Hs.eg.db )
-library( org.Mm.eg.db )
+library(genefilter)
+library(EBImage)
+library(statmod)
+library(topGO)
+library(org.Hs.eg.db)
+library(org.Mm.eg.db)
 library(Rgraphviz)
 options( max.print=300, width=100 )
 ```
