@@ -4,7 +4,7 @@
 \alias{tmm_norm}
 \title{TMM normalisation using spike in size factors}
 \usage{
-tmm_norm(geneData, spikeData)
+tmm_norm(geneData, spikeData, outDir)
 }
 \description{
 TMM normalisation using spike in size factors

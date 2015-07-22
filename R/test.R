@@ -2,8 +2,9 @@
 run_test=function(outDir){
   #load the test data
   print("Loading data...")
-  data(test_data)
-  print(dim(d))
+  #load("scran_test.Rdata")
+  print(dim(scran_test))
+  d=scran_test
   
   #set single cell columns and get column names
   sing_cols=c(3:ncol(d))
