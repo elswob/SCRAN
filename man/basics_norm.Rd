@@ -4,7 +4,7 @@
 \alias{basics_norm}
 \title{BASiCS normalisation}
 \usage{
-basics_norm(dCounts, sing_cols)
+basics_norm(dCounts, sing_cols, outDir)
 }
 \arguments{
 \item{dCounts}{The raw counts including ERCC spike in data}

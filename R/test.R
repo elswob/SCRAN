@@ -28,19 +28,19 @@ run_test=function(outDir){
   dir.create(rawDir,showWarnings = F)
   #plot raw counts
   print("Raw counts...")
-  plot_raw_counts(sep$geneCounts,sep$spikeCounts,rawDir)
+  #plot_raw_counts(sep$geneCounts,sep$spikeCounts,rawDir)
   
   #Read dist
   print("Read dist...")
-  read_dist(sep$geneData,sing_cols,rawDir,dFilt)
+  #read_dist(sep$geneData,sing_cols,rawDir,dFilt)
   
   #counts per gene
   print("Counts per gene...")
-  cpg(sep$geneData,sing_cols,rawDir)
+  #cpg(sep$geneData,sing_cols,rawDir)
   
   #pca
   print("PCA...")
-  pca_heatmap(sep$geneData,sing_cols,10,rawDir)
+  #pca_heatmap(sep$geneData,sing_cols,10,rawDir)
   
   #unique genes
   print("Unique genes per cell...")
@@ -49,36 +49,41 @@ run_test=function(outDir){
   
   #gene counts
   print("Gene counts per sample...")
-  gc_per_samp(sep$geneData,rawDir)
+  #gc_per_samp(sep$geneData,rawDir)
   
   #biotypes
   print("Biotypes...")
-  biotypes(sep$geneData,sing_cols,"Mouse",rawDir)
+  #biotypes(sep$geneData,sing_cols,"Mouse",rawDir)
   
   #ercc plots
   print("ERCC plots...")
-  spike_in_check(sep$spikeCounts, sep$spikeData, sing_cols, rawDir)
+  #spike_in_check(sep$spikeCounts, sep$spikeData, sing_cols, rawDir)
   
   #spike in and hkg
   print("Spike-ins and HKGs...")
-  spike_hkg(sep$geneData,sep$spikeData,"Mouse",sing_cols,rawDir)
+  #spike_hkg(sep$geneData,sep$spikeData,"Mouse",sing_cols,rawDir)
   
   #brennecke analysis
   print("Brennecke analysis...")
   brDir=paste0(outDir,"/Brennecke/")
-  brennecke(dCounts = d, species = "Mouse", outDir = brDir, spike_text = "ERCC", pc = 10)
+  #brennecke(dCounts = d, species = "Mouse", outDir = brDir, spike_text = "ERCC", pc = 10)
   
   #basics normalisation
   print("BASiCS normalisation...")
   baDir=paste0(outDir,"/BASiCS/")
-  b_norm<<-basics_norm(dFilt,sing_cols,baDir)
+  #b_norm<<-basics_norm(dFilt,sing_cols,baDir)
   
   #run QC steps on BASiCS
-  pca_heatmap(b_norm,sing_cols,top=50,outDir=baDir)
+  #pca_heatmap(b_norm,sing_cols,top=50,outDir=baDir)
   
   #run hkg check
-  sep=sepCounts(b_norm,sing_cols,"ERCC")
-  print(dim(sep$geneData))
-  print(dim(sep$spikeData))
-  spike_hkg(geneData = sep$geneData,spikeData = sep$spikeData, species = "Mouse", outDir = baDir)
+  b_sep=sepCounts(b_norm,sing_cols,"ERCC")
+  #spike_hkg(geneData = as.data.frame(b_sep$geneData),spikeData = as.data.frame(b_sep$spikeData), species = "Mouse", outDir = baDir)
+  
+  #normalise using TMM and spike ins
+  tDir=paste0(outDir,"/TMM_spike/")
+  t_norm=tmm_norm(geneData = sep$geneData,spikeData = sep$spikeData, outDir=tDir)
+  
+  pca_heatmap(t_norm,sing_cols,top=50,tDir)
+  spike_hkg(geneData = as.data.frame(t_norm), spikeData = sep$spikeData, species = "Mouse", sing_cols = sing_cols, outDir = tDir)
 }

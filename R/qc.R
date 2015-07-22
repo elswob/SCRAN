@@ -407,7 +407,7 @@ spike_hkg=function(geneData,spikeData,species,sing_cols,outDir){
   b2mCounts=geneData[b2m,sing_cols]
   
   #gapdh and actb
-  print(head(actbCounts))
+  #print(head(actbCounts))
   
   #merge
   m=melt(actbCounts,measure.vars=c(1:ncol(actbCounts)))
