@@ -2,15 +2,19 @@
 #http://www.nature.com/nmeth/journal/v10/n11/extref/nmeth.2645-S2.pdf
 
 #' Requires df of gene symbols, lengths and counts, rownames =  ensembl IDs and colnames = single cell IDs
-brennecke=function(dCounts,species,outDir,spike_text,pc){
+brennecke=function(dCounts,species,outDir,spike_text){
+  #make dir
+  outDir=paste0(outDir,"/Brennecke/")
+  dir.create(outDir,showWarnings = F)
+  
   print("Running Brennecke...")
   options(max.print=300, width=100)
   #str(d)
-  print(dim(d))
-  #keep genes with counts in X% of cells and remove symbol column
-  keep=rowSums(d[,3:ncol(d)]>0) >= (ncol(d)/100)*pc
-  dCounts<-d[keep,2:ncol(d)]
   print(dim(dCounts))
+  #keep genes with counts in X% of cells and remove symbol column
+  #keep=rowSums(dCounts[,3:ncol(dCounts)]>0) >= (ncol(dCounts)/100)*samp_pc
+  #dCounts<-dCounts[keep,2:ncol(dCounts)]
+  #print(dim(dCounts))
   #print(head(dCounts))
   
   #add one to every count as estimateSizeFactorsForMatrix fails if no gene has counts across all samples
@@ -59,7 +63,7 @@ brennecke=function(dCounts,species,outDir,spike_text,pc){
   #normalise by them
   nspikeData <- t( t(spikeData) / sfERCC )
   ngeneData <- t( t(geneData) / sfHsap )
-  write.table(nspikeData,file=paste0(outDir,"/nspikeData.txt"),sep="\t",quote=F,col.names = NA)
+  write.table(nspikeData,file=paste0(outDir,"/nSpikeData.txt"),sep="\t",quote=F,col.names = NA)
   write.table(ngeneData,file=paste0(outDir,"/nCountsGenes.txt"),sep="\t",quote=F, col.names = NA)
   
   #We calculate the sample moments:
@@ -267,8 +271,8 @@ brennecke=function(dCounts,species,outDir,spike_text,pc){
     log2RelExprAt[ sig, ],
     check.names=FALSE )
   
-  d$ens=rownames(d)
-  d_symbols=d[,c(1,ncol(d))]
+  dCounts$ens=rownames(dCounts)
+  d_symbols=dCounts[,c(1,ncol(dCounts))]
   m=merge(highVarTable,d_symbols,by.x="geneID",by.y="ens")
   
   highVarTable=m

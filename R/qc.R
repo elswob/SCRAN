@@ -10,7 +10,7 @@ sing_col_convert=function(dCounts,sing_cols){
 #' @param cpmVal The minimum CPM value 
 #' @param pc The percentage of cells to be expressed at the minumum CPM
 #' @return The original and filtered counts
-filter_counts=function(dCounts,sing_cols,cpmVal=1,samp_pc=5){
+filter_counts=function(dCounts,sing_cols,cpmVal,samp_pc){
   keep=rowSums(cpm(dCounts[,sing_cols])>cpmVal) >= (length(sing_cols)/100)*samp_pc
   summary(keep)
   return(dCounts[keep,])

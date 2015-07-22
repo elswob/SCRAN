@@ -22,26 +22,27 @@ run_test=function(outDir){
   print(dim(sep$spikeData))
   print(dim(sep$geneData))
   
-  #set out dir
+  #set out dirs
   dir.create(outDir,showWarnings = F)
-  
   rawDir=paste0(outDir,"/Raw/")
   dir.create(rawDir,showWarnings = F)
+  qcDir=paste0(rawDir,"/QC/")
+  dir.create(qcDir,showWarnings = F)
   #plot raw counts
   print("Raw counts...")
-  #plot_raw_counts(sep$geneCounts,sep$spikeCounts,rawDir)
+  plot_raw_counts(sep$geneCounts,sep$spikeCounts,qcDir)
   
   #Read dist
   print("Read dist...")
-  #read_dist(sep$geneData,sing_cols,rawDir,dFilt)
+  read_dist(sep$geneData,sing_cols,qcDir,dFilt)
   
   #counts per gene
   print("Counts per gene...")
-  #cpg(sep$geneData,sing_cols,rawDir)
+  cpg(sep$geneData,sing_cols,qcDir)
   
   #pca
   print("PCA...")
-  #pca_heatmap(sep$geneData,sing_cols,10,rawDir)
+  pca_heatmap(sep$geneData,sing_cols,10,qcDir)
   
   #unique genes
   print("Unique genes per cell...")
@@ -50,27 +51,26 @@ run_test=function(outDir){
   
   #gene counts
   print("Gene counts per sample...")
-  #gc_per_samp(sep$geneData,rawDir)
+  gc_per_samp(sep$geneData,qcDir)
   
   #biotypes
   print("Biotypes...")
-  #biotypes(sep$geneData,sing_cols,"Mouse",rawDir)
+  biotypes(sep$geneData,sing_cols,"Mouse",qcDir)
   
   #ercc plots
   print("ERCC plots...")
-  #spike_in_check(sep$spikeCounts, sep$spikeData, sing_cols, rawDir)
+  spike_in_check(sep$spikeCounts, sep$spikeData, sing_cols, qcDir)
   
   #spike in and hkg
   print("Spike-ins and HKGs...")
-  #spike_hkg(sep$geneData,sep$spikeData,"Mouse",sing_cols,rawDir)
+  spike_hkg(sep$geneData,sep$spikeData,"Mouse",sing_cols,qcDir)
   
   #siber
   siber_res=siber(sep$geneData,sing_cols,rawDir,dFilt)
   
   #brennecke analysis
   print("Brennecke analysis...")
-  brDir=paste0(outDir,"/Brennecke/")
-  #brennecke(dCounts = d, species = "Mouse", outDir = brDir, spike_text = "ERCC", pc = 10)
+  #brennecke(dCounts = d, species = "Mouse", outDir = outDir, spike_text = "ERCC", pc = 10)
   
   #basics normalisation
   print("BASiCS normalisation...")
