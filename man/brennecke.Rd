@@ -4,7 +4,7 @@
 \alias{brennecke}
 \title{Requires df of gene symbols, lengths and counts, rownames =  ensembl IDs and colnames = single cell IDs}
 \usage{
-brennecke(dCounts, species, outDir, spike_text, pc)
+brennecke(dCounts, species, outDir, spike_text)
 }
 \description{
 Requires df of gene symbols, lengths and counts, rownames =  ensembl IDs and colnames = single cell IDs

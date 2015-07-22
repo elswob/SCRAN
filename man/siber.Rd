@@ -4,7 +4,7 @@
 \alias{siber}
 \title{SIBER bimodal analysis}
 \usage{
-siber(geneData, sing_cols, dCounts, outDir)
+siber(geneData, sing_cols, outDir, dCounts)
 }
 \description{
 SIBER bimodal analysis

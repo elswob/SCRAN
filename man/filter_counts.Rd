@@ -4,7 +4,7 @@
 \alias{filter_counts}
 \title{Filter the counts by CPM and percentage of samples}
 \usage{
-filter_counts(dCounts, sing_cols, cpmVal = 1, samp_pc = 5)
+filter_counts(dCounts, sing_cols, cpmVal, samp_pc)
 }
 \arguments{
 \item{dCounts}{The counts dataframe}
