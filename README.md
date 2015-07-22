@@ -68,3 +68,10 @@ Install and load SCRAN
 install_github("elswob/SCRAN")
 libary(SCRAN)
 ```
+
+### Test
+
+To test with the preloaded data just call the test_run() function with a directory to place the output, e.g.
+```
+test_run("/path/to/somewhere")
+```

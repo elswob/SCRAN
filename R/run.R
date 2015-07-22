@@ -100,21 +100,21 @@ scran_run=function(counts,sing_cols,outDir,cpmVal=1,samp_pc=5,top=50,spike_text=
   print(dim(sep$geneData))
   
   #QC
-  #scran_qc(geneData = sep$geneData, spikeData = sep$spikeData, geneCounts = sep$geneCounts, spikeCounts = sep$spikeCounts, qcDir = qcDir, sing_cols = sing_cols, dFilt = dFilt, species = species)
+  scran_qc(geneData = sep$geneData, spikeData = sep$spikeData, geneCounts = sep$geneCounts, spikeCounts = sep$spikeCounts, qcDir = qcDir, sing_cols = sing_cols, dFilt = dFilt, species = species)
   #analysis
   aDir=paste0(rawDir,"/Analysis/")
   dir.create(aDir,showWarnings = F)
-  #scran_analysis(geneData = sep$geneData, spikeData = sep$spikeData, species = species, counts = dFilt, sing_cols = sing_cols, top = top, outDir = aDir)
+  scran_analysis(geneData = sep$geneData, spikeData = sep$spikeData, species = species, counts = dFilt, sing_cols = sing_cols, top = top, outDir = aDir)
   
   ### Bennecke ###
   #remove symbol column
   d<-dFilt[,2:ncol(dFilt)]
-  #brennecke(dCounts = d, species = species, outDir = outDir, spike_text = spike_text)
+  brennecke(dCounts = d, species = species, outDir = outDir, spike_text = spike_text)
   
   ### TMM ###
   tDir=paste0(outDir,"/TMM_spike/")
-  #t_norm=tmm_norm(geneData = sep$geneData,spikeData = sep$spikeData, outDir=tDir)
-  #scran_analysis(geneData = t_norm, spikeData = sep$spikeData, sing_cols = sing_cols, top = top, outDir = tDir, species = species, counts = dFilt)
+  t_norm=tmm_norm(geneData = sep$geneData,spikeData = sep$spikeData, outDir=tDir)
+  scran_analysis(geneData = t_norm, spikeData = sep$spikeData, sing_cols = sing_cols, top = top, outDir = tDir, species = species, counts = dFilt)
   
   ### BASiCS
   print("BASiCS normalisation...")
@@ -123,7 +123,7 @@ scran_run=function(counts,sing_cols,outDir,cpmVal=1,samp_pc=5,top=50,spike_text=
   scran_analysis(geneData = b_norm, spikeData = sep$spikeData, sing_cols = sing_cols, top=top, outDir = baDir, species = species, counts = dFilt)
 }
 
-test_run=function(){
+test_run=function(outDir){
   sing_cols=c(3:ncol(scran_test))
-  scran_run(counts = scran_test, sing_cols = sing_cols, outDir = "~/Work/projects/single-cell_testing/scran/", species = "Mouse", samp_pc = 10)
+  scran_run(counts = scran_test, sing_cols = sing_cols, outDir = outDir, species = "Mouse", samp_pc = 10)
 }
