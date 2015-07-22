@@ -48,7 +48,12 @@ library(topGO)
 library(org.Hs.eg.db)
 library(org.Mm.eg.db)
 library(Rgraphviz)
-options( max.print=300, width=100 )
+```
+
+Install and load BASiCS normalisation
+```
+install_github('catavallejos/BASiCS')
+library(BASiCS)
 ```
 
 Install and load SCRAN

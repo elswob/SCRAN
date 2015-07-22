@@ -3,6 +3,7 @@
 
 #' Requires df of gene symbols, lengths and counts, rownames =  ensembl IDs and colnames = single cell IDs
 brennecke=function(dCounts,species,outDir,spike_text,pc){
+  options(max.print=300, width=100)
   #str(d)
   print(dim(d))
   #keep genes with counts in X% of cells and remove symbol column
@@ -18,7 +19,6 @@ brennecke=function(dCounts,species,outDir,spike_text,pc){
   #significane threshold
   sigVal=0.1
   
-  outDir=paste0(outDir,"/Brennecke/")
   dir.create(outDir,showWarnings = F)
   
   #dCounts[ 1:10, 1:5 ]
