@@ -69,9 +69,17 @@ install_github("elswob/SCRAN")
 libary(SCRAN)
 ```
 
-### Test
+### Run
 
 To test with the preloaded data just call the test_run() function with a directory to place the output, e.g.
 ```
 test_run("/path/to/somewhere")
+```
+
+On other data
+```
+a=read.delim("file.tsv",header=T,row.names=1)
+sing_cols=c(3:ncol(a))
+scran_run(counts=a, sing_cols=sing_cols, outDir="~/", species="mouse")
+scran_run(counts)
 ```
