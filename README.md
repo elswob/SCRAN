@@ -81,5 +81,4 @@ On other data
 a=read.delim("file.tsv",header=T,row.names=1)
 sing_cols=c(3:ncol(a))
 scran_run(counts=a, sing_cols=sing_cols, outDir="~/", species="mouse")
-scran_run(counts)
 ```
