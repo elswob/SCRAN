@@ -3,6 +3,7 @@
 
 #' Requires df of gene symbols, lengths and counts, rownames =  ensembl IDs and colnames = single cell IDs
 brennecke=function(dCounts,species,outDir,spike_text,pc){
+  print("Running Brennecke...")
   options(max.print=300, width=100)
   #str(d)
   print(dim(d))

@@ -2,6 +2,7 @@
 #' @param dCounts The raw counts including ERCC spike in data
 #' @param sing_cols The column names for the single cell data
 basics_norm=function(dCounts,sing_cols,outDir){
+  print("Running BASiCS...")
   #make directory
   dir.create(outDir,showWarnings = F)
   #generate Counts

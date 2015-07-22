@@ -28,6 +28,11 @@ biocLite("topGO")
 biocLite("org.Hs.eg.db")
 biocLite("org.Mm.eg.db")
 biocLite("Rgraphviz")
+biocLite("edgeR")
+
+#other
+source("http://bioinformatics.mdanderson.org/OOMPA/oompaLite.R")
+oompainstall(groupName="siber")
 ```
 
 ```
@@ -48,6 +53,8 @@ library(topGO)
 library(org.Hs.eg.db)
 library(org.Mm.eg.db)
 library(Rgraphviz)
+library(edgeR)
+library(SIBER)
 ```
 
 Install and load BASiCS normalisation

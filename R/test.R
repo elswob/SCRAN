@@ -64,6 +64,9 @@ run_test=function(outDir){
   print("Spike-ins and HKGs...")
   #spike_hkg(sep$geneData,sep$spikeData,"Mouse",sing_cols,rawDir)
   
+  #siber
+  siber_res=siber(sep$geneData,sing_cols,rawDir,dFilt)
+  
   #brennecke analysis
   print("Brennecke analysis...")
   brDir=paste0(outDir,"/Brennecke/")
@@ -73,18 +76,17 @@ run_test=function(outDir){
   print("BASiCS normalisation...")
   baDir=paste0(outDir,"/BASiCS/")
   #b_norm<<-basics_norm(dFilt,sing_cols,baDir)
-  
-  #run QC steps on BASiCS
+  #run QC and analysis steps on BASiCS
   #pca_heatmap(b_norm,sing_cols,top=50,outDir=baDir)
-  
-  #run hkg check
-  b_sep=sepCounts(b_norm,sing_cols,"ERCC")
+  #b_sep=sepCounts(b_norm,sing_cols,"ERCC")
   #spike_hkg(geneData = as.data.frame(b_sep$geneData),spikeData = as.data.frame(b_sep$spikeData), species = "Mouse", outDir = baDir)
+  #siber_res=siber(b_sep$geneData,sing_cols,baDir,dFilt)
   
   #normalise using TMM and spike ins
   tDir=paste0(outDir,"/TMM_spike/")
   t_norm=tmm_norm(geneData = sep$geneData,spikeData = sep$spikeData, outDir=tDir)
-  
-  pca_heatmap(t_norm,sing_cols,top=50,tDir)
-  spike_hkg(geneData = as.data.frame(t_norm), spikeData = sep$spikeData, species = "Mouse", sing_cols = sing_cols, outDir = tDir)
+  #run QC and analysis
+  #pca_heatmap(t_norm,sing_cols,top=50,tDir)
+  #spike_hkg(geneData = as.data.frame(t_norm), spikeData = sep$spikeData, species = "Mouse", sing_cols = sing_cols, outDir = tDir)
+  #siber_res=siber(t_norm,sing_cols,tDir,dFilt)
 }
