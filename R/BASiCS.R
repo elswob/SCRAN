@@ -26,7 +26,7 @@ basics_norm=function(dCounts,sing_cols,outDir){
   ematch=e[,2] %in% rownames(dCounts)
   SpikeInput=e[ematch,][,4]
   
-  Data = newBASiCS_Data(Counts, Tech, SpikeInput)
+  #Data = newBASiCS_Data(Counts, Tech, SpikeInput)
 
   #filter_data_object}
   Filter = BASiCS_Filter(Counts, Tech, SpikeInput, 
@@ -36,7 +36,7 @@ basics_norm=function(dCounts,sing_cols,outDir){
   
   #fit the model
   #MCMC_Output <- BASiCS_MCMC(Data, N = 400, Thin = 10, Burn = 200, PrintProgress = T)
-  MCMC_Output <- BASiCS_MCMC(Data, N = 400, Thin = 10, Burn = 200, StoreChains = T, StoreDir = getwd(), RunName = "Test")
+  MCMC_Output <- BASiCS_MCMC(Data, N = 1000, Thin = 10, Burn = 500, StoreChains = T, StoreDir = outDir, RunName = "Test")
   
   #check the model
   plot(MCMC_Output, Param = "mu", Gene = 1)
@@ -80,8 +80,12 @@ basics_norm=function(dCounts,sing_cols,outDir){
   print(head(VarDecomp))
   
   DetectHVG <- BASiCS_DetectHVG(MCMC_Output, VarThreshold = 0.70, Plot = TRUE)
+  HVG_out=DetectHVG$Table
+  HVG_out$ensembl=rownames(dCounts)[HVG_out$GeneIndex]
+  write.table(DetectHVG, file=paste0(outDir,"basics_HVG.tsv"),sep="\t",quote=F,col.names=NA)
   
-  DenoisedCounts = BASiCS_DenoisedCounts(Data = Data, Chain = MCMC_Output)
+  
+  DenoisedCounts <- BASiCS_DenoisedCounts(Data = Data, Chain = MCMC_Output)
   write.table(x = DenoisedCounts, file = paste0(outDir,"basics_normalised_counts.tsv"),sep="\t",quote = F, col.names = NA)
   return(DenoisedCounts)
 }

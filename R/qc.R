@@ -134,7 +134,7 @@ read_dist=function(dCounts,sing_cols,outDir,dCounts_orig){
   #plot distribution of top 10
   t10=r_names[1:10]
   t10_counts=dCounts[t10,sing_cols]
-  t10_pc=(t10_counts/colSums(dCounts[,sing_cols]))*100
+  t10_pc=(t10_counts/colSums(dCounts_orig[,sing_cols]))*100
   t10_data=merge(t10_pc,dCounts_orig[,1,drop=FALSE],by=0)
   colnames(t10_data)[ncol(t10_data)]="Symbol"
   tm=melt(t10_data,measure.vars=sing_cols,id.vars="Symbol")
@@ -402,6 +402,7 @@ spike_hkg=function(geneData,spikeData,species,sing_cols,outDir){
     actb="ENSMUSG00000029580"
     b2m="ENSMUSG00000060802"
   }
+  #geneData[,sing_cols]=cpm(geneData[,sing_cols])
   gapdhCounts=geneData[gapdh,sing_cols]
   actbCounts=geneData[actb,sing_cols]
   b2mCounts=geneData[b2m,sing_cols]

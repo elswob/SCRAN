@@ -18,20 +18,7 @@ library(Rgraphviz)
 library(SIBER)
 library(edgeR)
 library(BASiCS)
-
-scran_setup=function(){
-  #filter
-  print("Filter...")
-  dFilt=filter_counts(d,sing_cols,cpmVal = 5)
-  print(dim(dFilt))
-  print(summary(rowSums(dFilt[,sing_cols])))
-  
-  #split
-  print("Data split...")
-  sep=sepCounts(dFilt,sing_cols, "ERCC")
-  print(dim(sep$spikeData))
-  print(dim(sep$geneData))
-}
+library(SIBER)
 
 scran_qc=function(geneData, spikeData, geneCounts, spikeCounts, qcDir, sing_cols, dFilt, species){
   #plot raw counts
@@ -76,7 +63,7 @@ scran_analysis=function(geneData, spikeData, sing_cols, top, outDir, species, co
 }
 
 #run_scran=function(counts,sing_cols,cpmVal=1,pc=5,spike_text="ERCC",species="Human",outDir){
-scran_run=function(counts,sing_cols,outDir,cpmVal=1,samp_pc=10,top=50,spike_text="ERCC",species="Human"){
+scran_run=function(counts,sing_cols,outDir,cpmVal=1,samp_pc=20,top=50,spike_text="ERCC",species="Human"){
   ### Raw data ###
   #set out dirs
   dir.create(outDir,showWarnings = F)
@@ -96,7 +83,7 @@ scran_run=function(counts,sing_cols,outDir,cpmVal=1,samp_pc=10,top=50,spike_text
   
   #split into genes and spike-ins
   print("Data split...")
-  sep=sepCounts(dFilt,sing_cols, spike_text)
+  sep<-sepCounts(dFilt,sing_cols, spike_text)
   print(dim(sep$spikeData))
   print(dim(sep$geneData))
   
@@ -110,7 +97,7 @@ scran_run=function(counts,sing_cols,outDir,cpmVal=1,samp_pc=10,top=50,spike_text
   ### Bennecke ###
   #remove symbol column
   d<-dFilt[,2:ncol(dFilt)]
-  brennecke(dCounts = d, species = species, outDir = outDir, spike_text = spike_text)
+  #brennecke(dCounts = d, species = species, outDir = outDir, spike_text = spike_text)
   
   ### TMM ###
   tDir=paste0(outDir,"/TMM_spike/")
@@ -118,13 +105,14 @@ scran_run=function(counts,sing_cols,outDir,cpmVal=1,samp_pc=10,top=50,spike_text
   scran_analysis(geneData = t_norm, spikeData = sep$spikeData, sing_cols = sing_cols, top = top, outDir = tDir, species = species, counts = dFilt)
   
   ### BASiCS
-  print("BASiCS normalisation...")
   baDir=paste0(outDir,"/BASiCS/")
   b_norm<-basics_norm(dFilt,sing_cols,baDir)
-  scran_analysis(geneData = b_norm, spikeData = sep$spikeData, sing_cols = sing_cols, top=top, outDir = baDir, species = species, counts = dFilt)
+  b_norm_sep=sepCounts(b_norm,sing_cols,spike_text)
+  scran_analysis(geneData = b_norm_sep$geneData, spikeData = sep$spikeData, sing_cols = sing_cols, top=top, outDir = baDir, species = species, counts = dFilt)
 }
 
 test_run=function(outDir){
+  #scran_test=load("scran_test.rdata")
   sing_cols=c(3:ncol(scran_test))
   scran_run(counts = scran_test, sing_cols = sing_cols, outDir = outDir, species = "Mouse")
 }
