@@ -80,10 +80,14 @@ basics_norm=function(dCounts,sing_cols,outDir){
   print(head(VarDecomp))
   
   DetectHVG <- BASiCS_DetectHVG(MCMC_Output, VarThreshold = 0.70, Plot = TRUE)
-  HVG_out=DetectHVG$Table
-  HVG_out$ensembl=rownames(dCounts)[HVG_out$GeneIndex]
-  write.table(DetectHVG, file=paste0(outDir,"basics_HVG.tsv"),sep="\t",quote=F,col.names=NA)
+  HVG_out<<-DetectHVG$Table
+  #HVG_out$ensembl=rownames(dCounts)[HVG_out$GeneIndex]
+  write.table(HVG_out, file=paste0(outDir,"basics_HVG.tsv"),sep="\t",quote=F,col.names=NA)
   
+  DetectLVG <- BASiCS_DetectLVG(MCMC_Output, VarThreshold = 0.70, Plot = TRUE)
+  LVG_out=DetectLVG$Table
+  #LVG_out$ensembl=rownames(dCounts)[LVG_out$GeneIndex]
+  write.table(LVG_out, file=paste0(outDir,"basics_LVG.tsv"),sep="\t",quote=F,col.names=NA)
   
   DenoisedCounts <- BASiCS_DenoisedCounts(Data = Data, Chain = MCMC_Output)
   write.table(x = DenoisedCounts, file = paste0(outDir,"basics_normalised_counts.tsv"),sep="\t",quote = F, col.names = NA)
