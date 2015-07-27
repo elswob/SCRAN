@@ -36,7 +36,7 @@ basics_norm=function(dCounts,sing_cols,outDir){
   
   #fit the model
   #MCMC_Output <- BASiCS_MCMC(Data, N = 400, Thin = 10, Burn = 200, PrintProgress = T)
-  MCMC_Output <- BASiCS_MCMC(Data, N = 1000, Thin = 10, Burn = 500, StoreChains = T, StoreDir = outDir, RunName = "Test")
+  MCMC_Output <- BASiCS_MCMC(Data, N = 40000, Thin = 10, Burn = 20000, StoreChains = T, StoreDir = outDir, RunName = "40k")
   
   #check the model
   plot(MCMC_Output, Param = "mu", Gene = 1)

@@ -1,25 +1,26 @@
-library(pheatmap)
-library(ggbiplot)
-library(reshape)
-library(ggplot2)
-library(edgeR)
-library(biomaRt)
-library(R.utils)
-library(RCurl)
-library(DESeq)
-library(devtools)
-library(genefilter)
-library(EBImage)
-library(statmod)
-library(topGO)
-library(org.Hs.eg.db)
-library(org.Mm.eg.db)
-library(Rgraphviz)
-library(SIBER)
-library(edgeR)
-library(BASiCS)
-library(SIBER)
-
+scran_setup=function(){
+  library(pheatmap)
+  library(ggbiplot)
+  library(reshape)
+  library(ggplot2)
+  library(edgeR)
+  library(biomaRt)
+  library(R.utils)
+  library(RCurl)
+  library(DESeq)
+  library(devtools)
+  library(genefilter)
+  library(EBImage)
+  library(statmod)
+  library(topGO)
+  library(org.Hs.eg.db)
+  library(org.Mm.eg.db)
+  library(Rgraphviz)
+  library(SIBER)
+  library(edgeR)
+  library(BASiCS)
+  library(SIBER)
+  }
 scran_qc=function(geneData, spikeData, geneCounts, spikeCounts, qcDir, sing_cols, dFilt, species){
   #plot raw counts
   print("Raw counts...")
@@ -64,6 +65,9 @@ scran_analysis=function(geneData, spikeData, sing_cols, top, outDir, species, co
 
 #run_scran=function(counts,sing_cols,cpmVal=1,pc=5,spike_text="ERCC",species="Human",outDir){
 scran_run=function(counts,sing_cols,outDir,cpmVal=1,samp_pc=20,top=50,spike_text="ERCC",species="Human"){
+  #load libs
+  scran_setup()
+  
   ### Raw data ###
   #set out dirs
   dir.create(outDir,showWarnings = F)
@@ -96,8 +100,9 @@ scran_run=function(counts,sing_cols,outDir,cpmVal=1,samp_pc=20,top=50,spike_text
   
   ### Bennecke ###
   #remove symbol column
-  d<-dFilt[,2:ncol(dFilt)]
-  #brennecke(dCounts = d, species = species, outDir = outDir, spike_text = spike_text)
+  c=c("Length",sing_cols)
+  d<-dFilt[,c]
+  brennecke(dCounts = d, species = species, outDir = outDir, spike_text = spike_text)
   
   ### TMM ###
   tDir=paste0(outDir,"/TMM_spike/")
