@@ -66,7 +66,7 @@ library(edgeR)
 library(SIBER)
 ```
 
-Install and load BASiCS normalisation
+Install and load BASiCS normalisation  
 ```
 install_github('catavallejos/BASiCS')
 library(BASiCS)
@@ -74,7 +74,7 @@ library(BASiCS)
 
 Install and load SCRAN:
 
-From Github:
+From Github:  
 ```
 install_github("elswob/SCRAN")
 libary(SCRAN)
