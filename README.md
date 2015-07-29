@@ -94,3 +94,5 @@ a=read.delim("file.tsv",header=T,row.names=1)
 sing_cols=c(3:ncol(a))
 scran_run(counts=a, sing_cols=sing_cols, outDir="~/", species="mouse")
 ```
+
+The demo data is the first 20 cells from the Treutlin et al data set http://www.nature.com/nature/journal/v509/n7500/abs/nature13173.html

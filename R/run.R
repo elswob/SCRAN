@@ -64,7 +64,7 @@ scran_analysis=function(geneData, spikeData, sing_cols, top, outDir, species, co
 }
 
 #run_scran=function(counts,sing_cols,cpmVal=1,pc=5,spike_text="ERCC",species="Human",outDir){
-scran_run=function(counts,sing_cols,outDir,cpmVal=1,samp_pc=20,top=50,spike_text="ERCC",species="Human"){
+run_scran=function(counts,sing_cols,outDir,cpmVal=1,samp_pc=20,top=50,spike_text="ERCC",species="Human"){
   #load libs
   scran_setup()
   
@@ -119,5 +119,5 @@ scran_run=function(counts,sing_cols,outDir,cpmVal=1,samp_pc=20,top=50,spike_text
 test_run=function(outDir){
   #scran_test=load("scran_test.rdata")
   sing_cols=c(3:ncol(scran_test))
-  scran_run(counts = scran_test, sing_cols = sing_cols, outDir = outDir, species = "Mouse")
+  run_scran(counts = scran_test, sing_cols = sing_cols, outDir = outDir, species = "Mouse")
 }

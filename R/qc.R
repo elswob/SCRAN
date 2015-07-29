@@ -208,11 +208,11 @@ pca_heatmap=function(geneCounts,sing_cols,top,outDir,allCounts){
   p.pca=prcomp(t(tpmCounts))
   #p.pca=prcomp(t(cpm(geneCounts)))
   pdf(paste0(outDir,"PCA.pdf"))
-  g = ggbiplot(p.pca, obs.scale = 0, ellipse = TRUE, varname.size=0.001, labels=colnames(geneCounts))
+  g = ggbiplot(p.pca, obs.scale = 0, ellipse = TRUE, varname.size=0.001, labels=colnames(geneCounts)) + ggtitle("PCA plot of log2 TPM")
   print(g)
   dev.off()
   pdf(paste0(outDir,"PCA_scree_plot.pdf"))
-  screeplot(p.pca,type="lines",col=3)
+  screeplot(p.pca,type="lines",col=3,main="PCA screeplot of log2 TPM")
   dev.off()
   
   #top=50
@@ -225,11 +225,11 @@ pca_heatmap=function(geneCounts,sing_cols,top,outDir,allCounts){
   p.pca=prcomp(t(tpmCounts))
   #p.pca=prcomp(t(cpm(geneCounts)))
   pdf(paste0(outDir,"PCA_top_",top,".pdf"))
-  g = ggbiplot(p.pca, obs.scale = 0, ellipse = TRUE, varname.size=0.001, labels=colnames(geneCounts))
+  g = ggbiplot(p.pca, obs.scale = 0, ellipse = TRUE, varname.size=0.001, labels=colnames(geneCounts)) + ggtitle(paste0("PCA plot of log2 TPM for top ",top," PCA genes"))
   print(g)
   dev.off()
   pdf(paste0(outDir,"PCA_scree_plot_top_",top,".pdf"))
-  screeplot(p.pca,type="lines",col=3)
+  screeplot(p.pca,type="lines",col=3,main=paste0("PCA screeplot of log2 TPM for top ",top," PCA genes"))
   dev.off()
   
   #convert to log 
@@ -244,7 +244,7 @@ pca_heatmap=function(geneCounts,sing_cols,top,outDir,allCounts){
   if(nrow(dc)<=100){
     pheatmap(dc, show_rownames = T, fontsize_row=7, main="Unsupervised clustering of log2 TPM")
   }else{
-    pheatmap(dc, show_rownames = F)
+    pheatmap(dc, show_rownames = F, main="Unsupervised clustering of log2 TPM")
   }
   dev.off()
 }
