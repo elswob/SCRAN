@@ -35,8 +35,8 @@ basics_norm=function(dCounts,sing_cols,outDir){
   Data = newBASiCS_Data(Filter$Counts, Filter$Tech, Filter$SpikeInput)
   
   #fit the model
-  #MCMC_Output <- BASiCS_MCMC(Data, N = 400, Thin = 10, Burn = 200, PrintProgress = T)
-  MCMC_Output <- BASiCS_MCMC(Data, N = 40000, Thin = 10, Burn = 20000, StoreChains = T, StoreDir = outDir, RunName = "40k")
+  MCMC_Output <- BASiCS_MCMC(Data, N = 400, Thin = 10, Burn = 200, StoreChains = T, StoreDir = outDir, RunName = "400")
+  #MCMC_Output <- BASiCS_MCMC(Data, N = 40000, Thin = 10, Burn = 20000, StoreChains = T, StoreDir = outDir, RunName = "40k")
   
   #check the model
   plot(MCMC_Output, Param = "mu", Gene = 1)
@@ -79,12 +79,14 @@ basics_norm=function(dCounts,sing_cols,outDir){
   VarDecomp = BASiCS_VarianceDecomp(MCMC_Output)
   print(head(VarDecomp))
   
-  DetectHVG <- BASiCS_DetectHVG(MCMC_Output, VarThreshold = 0.70, Plot = TRUE)
+  DetectHVG <<- BASiCS_DetectHVG(MCMC_Output, VarThreshold = 0.70, Plot = TRUE)
+  #DetectHVG = DetectHVG[order(DetectHVG$GeneNames),]
   HVG_out<<-DetectHVG$Table
   #HVG_out$ensembl=rownames(dCounts)[HVG_out$GeneIndex]
   write.table(HVG_out, file=paste0(outDir,"basics_HVG.tsv"),sep="\t",quote=F,col.names=NA)
   
   DetectLVG <- BASiCS_DetectLVG(MCMC_Output, VarThreshold = 0.70, Plot = TRUE)
+  #DetectLVG = DetectLVG[order(DetectLVG$GeneNames),]
   LVG_out=DetectLVG$Table
   #LVG_out$ensembl=rownames(dCounts)[LVG_out$GeneIndex]
   write.table(LVG_out, file=paste0(outDir,"basics_LVG.tsv"),sep="\t",quote=F,col.names=NA)

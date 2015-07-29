@@ -8,7 +8,7 @@ tmm_norm=function(geneData,spikeData,outDir){
   sfSpike <- estimateSizeFactorsForMatrix(spikeData)
   normFactor<-sfGene/sfSpike
   #nCountsGenes <<- t( t(geneData) * sfSpike )
-  nCountsGenes <<- t(t(geneData) / normFactor)
+  nCountsGenes <<- t(t(geneData) * normFactor)
   #nCountsGenes <- t(t(geneData) / sfGene)
   #nCountsGenes <- nCountsGenes / sfSpike
   

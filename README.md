@@ -71,6 +71,18 @@ libary(SCRAN)
 
 ### Run
 
+Requires counts data with symbol and length columns labelled 'Symbol' and 'Length' loaded with rownames as ensembl IDs and cell names as headers. An example data set is included:
+
+```
+scran_test[0:5,0:5]
+                   Symbol  Length SRR1033853 SRR1033854 SRR1033855
+ENSMUSG00000000001  Gnai3 3262.00        386         24          1
+ENSMUSG00000000028  Cdc45 1574.00          0          0          0
+ENSMUSG00000000031    H19 1268.60          0          0          0
+ENSMUSG00000000037  Scml2 3297.14          0          0          0
+ENSMUSG00000000056   Narf 1785.00          0         96          0
+```
+
 To test with the preloaded data just call the test_run() function with a directory to place the output, e.g.
 ```
 test_run("/path/to/somewhere")

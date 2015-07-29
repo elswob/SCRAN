@@ -202,8 +202,11 @@ cpg=function(dCounts,sing_cols,outDir){
 }
 
 #' PCA and heatmap
-pca_heatmap=function(geneCounts,sing_cols,top,outDir){
-  p.pca=prcomp(t(cpm(geneCounts)))
+pca_heatmap=function(geneCounts,sing_cols,top,outDir,allCounts){
+  #tpm transform
+  tpmCounts=countToTpm(geneCounts,allCounts$Length)
+  p.pca=prcomp(t(tpmCounts))
+  #p.pca=prcomp(t(cpm(geneCounts)))
   pdf(paste0(outDir,"PCA.pdf"))
   g = ggbiplot(p.pca, obs.scale = 0, ellipse = TRUE, varname.size=0.001, labels=colnames(geneCounts))
   print(g)
@@ -218,8 +221,9 @@ pca_heatmap=function(geneCounts,sing_cols,top,outDir){
   top_pca
   
   #redo PCA
-  geneCounts=geneCounts[rownames(geneCounts) %in% top_pca,]
-  p.pca=prcomp(t(cpm(geneCounts)))
+  tpmCounts=tpmCounts[rownames(tpmCounts) %in% top_pca,]
+  p.pca=prcomp(t(tpmCounts))
+  #p.pca=prcomp(t(cpm(geneCounts)))
   pdf(paste0(outDir,"PCA_top_",top,".pdf"))
   g = ggbiplot(p.pca, obs.scale = 0, ellipse = TRUE, varname.size=0.001, labels=colnames(geneCounts))
   print(g)
@@ -229,23 +233,30 @@ pca_heatmap=function(geneCounts,sing_cols,top,outDir){
   dev.off()
   
   #convert to log 
-  geneCounts[geneCounts==0]=0.01
-  g_log10=log10(geneCounts[,sing_cols])
+  tpmCounts[tpmCounts==0]=0.01
+  g_log2=log2(tpmCounts[,sing_cols])
   #print(g_log10[0:5,0:5])
   #get relevant data
-  dc=g_log10[rownames(g_log10) %in% top_pca,]
+  dc=g_log2[rownames(g_log2) %in% top_pca,]
   
   #cluster and heatmap
   pdf(paste0(outDir,"Heatmap_PCA_top_",top,"_heatmap.pdf"),onefile=FALSE)
   if(nrow(dc)<=100){
-    pheatmap(dc, show_rownames = T, fontsize_row=7)
+    pheatmap(dc, show_rownames = T, fontsize_row=7, main="Unsupervised clustering of log2 TPM")
   }else{
     pheatmap(dc, show_rownames = F)
   }
   dev.off()
 }
 
-#`Number of unique genes expressed per sample
+#' Convert counts to TPM
+countToTpm <- function(counts, effLen){
+  rate <- log(counts) - log(effLen)
+  denom <- log(sum(exp(rate)))
+  exp(rate - denom + log(1e6))
+}
+
+#' Number of unique genes expressed per sample
 uniq_genes=function(geneCounts,sing_cols){
   geneCounts=geneCounts[,sing_cols]
   

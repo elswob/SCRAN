@@ -56,7 +56,7 @@ scran_brennecke=function(){
 
 scran_analysis=function(geneData, spikeData, sing_cols, top, outDir, species, counts){
   #PCA
-  pca_heatmap(geneData,sing_cols,top,outDir)
+  pca_heatmap(geneData,sing_cols,top,outDir,counts)
   #spike-ins and HKGs
   spike_hkg(geneData = as.data.frame(geneData),spikeData = as.data.frame(spikeData), species = species, outDir = outDir)
   #siber
