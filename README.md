@@ -72,10 +72,23 @@ install_github('catavallejos/BASiCS')
 library(BASiCS)
 ```
 
-Install and load SCRAN
+Install and load SCRAN:
+
+From Github:
 ```
 install_github("elswob/SCRAN")
 libary(SCRAN)
+```
+
+From Stash:
+
+1. Download using the 'Download' link
+2. Unzip
+3. Install
+
+```
+setwd("~/Downloads/scran_master")
+install(".")
 ```
 
 ### Run
