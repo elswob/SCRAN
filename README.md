@@ -1,5 +1,4 @@
-# SCRAN
-Single Cell Rna-seq ANalysis
+# Single Cell Rna-seq ANalysis (SCRAN)
 
 Essentially a collection of single-cell related analysis tools. Including:
 
