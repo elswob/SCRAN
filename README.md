@@ -1,6 +1,13 @@
 # SCRAN
 Single Cell Rna-seq ANalysis
 
+Essentially a collection of single-cell related analysis tools. Including:
+
+- Basic QC
+- Brennecke analysis
+- SIBER bimodal analysis
+- BASiCS normalisation.
+
 ### Installation
 
 Install libraries
