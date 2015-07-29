@@ -17,13 +17,11 @@ Install libraries
 #CRAN
 install.packages("ggplot2")
 install.packages("pheatmap")
-install.packges("devtools")
+install.packages("devtools")
 install.packages("R.utils")
 install.packages("RCurl")
 install.packages("statmod")
-
-#GitHub
-install_github("vqv/ggbiplot")
+install.packages("reshape")
 
 #Bioconductor
 source("http://bioconductor.org/biocLite.R")
@@ -45,7 +43,6 @@ oompainstall(groupName="siber")
 
 ```
 library(pheatmap)
-library(ggbiplot)
 library(reshape)
 library(ggplot2) 
 library(edgeR)
@@ -63,6 +60,12 @@ library(org.Mm.eg.db)
 library(Rgraphviz)
 library(edgeR)
 library(SIBER)
+```
+
+Install and load ggbiplot  
+```
+install_github("vqv/ggbiplot")
+library(ggbiplot)
 ```
 
 Install and load BASiCS normalisation  
@@ -95,6 +98,7 @@ install(".")
 Requires counts data with symbol and length columns labelled 'Symbol' and 'Length' loaded with rownames as ensembl IDs and cell names as headers. An example data set is included:
 
 ```
+load(system.file("data/scran_test.Rdata",package="SCRAN"))
 scran_test[0:5,0:5]
                    Symbol  Length SRR1033853 SRR1033854 SRR1033855
 ENSMUSG00000000001  Gnai3 3262.00        386         24          1
