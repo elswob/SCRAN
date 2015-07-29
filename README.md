@@ -8,6 +8,8 @@ Essentially a collection of single-cell related analysis tools. Including:
 - SIBER bimodal analysis
 - BASiCS normalisation.
 
+Currently works with human and mouse data only.
+
 ### Installation
 
 Install libraries

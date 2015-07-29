@@ -64,7 +64,7 @@ scran_analysis=function(geneData, spikeData, sing_cols, top, outDir, species, co
 }
 
 #run_scran=function(counts,sing_cols,cpmVal=1,pc=5,spike_text="ERCC",species="Human",outDir){
-run_scran=function(counts,sing_cols,outDir,cpmVal=1,samp_pc=20,top=50,spike_text="ERCC",species="Human"){
+run_scran=function(counts,sing_cols,outDir,cpmVal=1,samp_pc=20,top=50,spike_text="ERCC",species="Human",basics_run="test"){
   #load libs
   scran_setup()
   
@@ -111,7 +111,7 @@ run_scran=function(counts,sing_cols,outDir,cpmVal=1,samp_pc=20,top=50,spike_text
   
   ### BASiCS
   baDir=paste0(outDir,"/BASiCS/")
-  b_norm<-basics_norm(dFilt,sing_cols,baDir)
+  b_norm<-basics_norm(dFilt,sing_cols,baDir,basics_run)
   b_norm_sep=sepCounts(b_norm,sing_cols,spike_text)
   scran_analysis(geneData = b_norm_sep$geneData, spikeData = sep$spikeData, sing_cols = sing_cols, top=top, outDir = baDir, species = species, counts = dFilt)
 }
@@ -119,5 +119,5 @@ run_scran=function(counts,sing_cols,outDir,cpmVal=1,samp_pc=20,top=50,spike_text
 test_run=function(outDir){
   #scran_test=load("scran_test.rdata")
   sing_cols=c(3:ncol(scran_test))
-  run_scran(counts = scran_test, sing_cols = sing_cols, outDir = outDir, species = "Mouse")
+  run_scran(counts = scran_test, sing_cols = sing_cols, outDir = outDir, species = "Mouse", basics_run = "test")
 }
